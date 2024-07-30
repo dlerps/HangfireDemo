@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HangfireDemo.Jobs.RepeatAfterMe;
 
-[Queue("Blue")]
+[Queue("blue")]
 public class RepeatAfterMeJob(ILogger<RepeatAfterMeJob> logger)
 {
     public async Task Run(RepeatAfterMeJobArgs args)

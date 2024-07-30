@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Hangfire.NetCore" Version="1.8.14" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
   </ItemGroup>
@@ -18,11 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.json">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
 </Project>

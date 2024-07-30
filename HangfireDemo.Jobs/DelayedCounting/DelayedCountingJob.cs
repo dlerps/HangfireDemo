@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HangfireDemo.Jobs.DelayedCounting;
 
-[Queue("Green")]
+[Queue("green")]
 public class DelayedCountingJob(ILogger<DelayedCountingJob> logger)
 {
     public async Task Run(DelayedCountingJobArgs args)

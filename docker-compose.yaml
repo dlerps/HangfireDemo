@@ -1,8 +1,83 @@
 services:
+
+  api:
+    image: hf-demo-api:latest
+    container_name: hf-demo-api
+    build:
+      context: .
+      dockerfile: api.dockerfile
+    ports:
+      - 55400:8080
+    networks:
+      - hf-demo
+    depends_on:
+      - pg
+    environment:
+      Hangfire__Database__Host: pg
+      Hangfire__Database__Port: 5432
+      Hangfire__Database__Name: hf_demo
+      Hangfire__Database__User: hf_user
+      Hangfire__Database__Password: 3FWE$43xwq@dA
+  
+  server.blue:
+    image: hf-demo-server:latest
+    container_name: hf-demo-server-blue
+    build:
+      context: .
+      dockerfile: server.dockerfile
+    networks:
+      - hf-demo
+    depends_on:
+      - pg
+    environment:
+      Hangfire__Database__Host: pg
+      Hangfire__Database__Port: 5432
+      Hangfire__Database__Name: hf_demo
+      Hangfire__Database__User: hf_user
+      Hangfire__Database__Password: 3FWE$43xwq@dA
+      Hangfire__Queues__0: blue
+
+  server.green:
+    image: hf-demo-server:latest
+    container_name: hf-demo-server-green
+    build:
+      context: .
+      dockerfile: server.dockerfile
+    networks:
+      - hf-demo
+    depends_on:
+      - pg
+    environment:
+      Hangfire__Database__Host: pg
+      Hangfire__Database__Port: 5432
+      Hangfire__Database__Name: hf_demo
+      Hangfire__Database__User: hf_user
+      Hangfire__Database__Password: 3FWE$43xwq@dA
+      Hangfire__Queues__0: green
+
+  server.green-blue:
+    image: hf-demo-server:latest
+    container_name: hf-demo-server-green-blue
+    build:
+      context: .
+      dockerfile: server.dockerfile
+    networks:
+      - hf-demo
+    depends_on:
+      - pg
+    environment:
+      Hangfire__Database__Host: pg
+      Hangfire__Database__Port: 5432
+      Hangfire__Database__Name: hf_demo
+      Hangfire__Database__User: hf_user
+      Hangfire__Database__Password: 3FWE$43xwq@dA
+      Hangfire__Queues__0: green
+      Hangfire__Queues__1: blue
   
   pg:
     image: postgres:16.3-alpine
     container_name: pg
+    hostname: pg
     environment:
       POSTGRES_DB: hf_demo
       POSTGRES_USER: hf_user
@@ -12,7 +87,7 @@ services:
     volumes:
      - pg-data:/var/lib/postgresql/data
     networks:
-      - si-base-x-network
+      - hf-demo
 
   pgadmin:
     image: dpage/pgadmin4:8.5
@@ -28,7 +103,7 @@ services:
     depends_on:
       - pg
     networks:
-      - si-base-x-network
+      - hf-demo
 
 networks:
   hf-demo:

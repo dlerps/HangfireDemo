@@ -2,6 +2,6 @@
 
 public enum ColorQueue
 {
-    Blue,
-    Green,
+    blue,
+    green,
 }

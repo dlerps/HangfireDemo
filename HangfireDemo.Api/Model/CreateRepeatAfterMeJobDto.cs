@@ -3,5 +3,6 @@
 public record CreateRepeatAfterMeJobDto(
     string Message,
     uint Delay,
-    string? JobId
+    string? JobId,
+    string? CronPattern
 );

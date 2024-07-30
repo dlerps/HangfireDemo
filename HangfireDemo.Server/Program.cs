@@ -1,35 +1,47 @@
 ﻿using Hangfire;
-using HangfireDemo.Jobs.Configuration;
 using HangfireDemo.Server.Configuration;
+using HangfireDemo.Server.Helper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", false, false)
+    .AddJsonFile("appsettings.local.json", true, false)
+    .AddEnvironmentVariables()
+    .Build();
 
 var host = Host.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration((context, builder) =>
+    .ConfigureAppConfiguration(c => c.AddJsonFile("appsettings.json", false, false)
+        .AddJsonFile("appsettings.local.json", true, false)
+        .AddEnvironmentVariables()
+    )
+    .ConfigureServices((context, services) =>
     {
-        builder
-            .AddJsonFile("appsettings.json", false, false)
-            .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, false)
-            .AddJsonFile($"appsettings.local.json", true, false)
-            .AddEnvironmentVariables();
-    })
-    .ConfigureServices(services =>
-    {
-        services.AddHangfire(HangfireConfig.Configure);
-        services.AddHangfireServer((provider, options) =>
-        {
-            var hfServerConfig = provider.GetRequiredService<HangfireServerConfig>();
-            options.Queues = hfServerConfig.Queues
-                .Select(q => q.ToString())
-                .ToArray();
-        });
+        ConfigurationHelper.PrintConfiguration(context.Configuration);
+        services
+            .Configure<HangfireServerConfig>(context.Configuration.GetSection("Hangfire"))
+            .Configure<HangfireConfig>(context.Configuration.GetSection("Hangfire"))
+            .AddLogging(log => log.ClearProviders().AddConsole())
+            .AddHangfire(HangfireConfig.Configure)
+            .AddHangfireServer((provider, options) =>
+            {
+                var hfServerConfig = provider.GetRequiredService<IOptions<HangfireServerConfig>>();
+                
+                options.HeartbeatInterval = TimeSpan.FromSeconds(30);
+                options.ServerName = hfServerConfig.Value.Name;
+                options.Queues = hfServerConfig.Value.Queues
+                    .Select(q => q.ToString())
+                    .ToArray();
+            });
     })
     .Build();
-    
+
 try
 {
-    await host.StartAsync();
+    await host.RunAsync();
 }
 catch (OperationCanceledException)
 {

@@ -7,19 +7,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddRouting();
+builder.Services.AddLogging(log => log.ClearProviders().AddConsole());
+builder.Services.Configure<HangfireConfig>(builder.Configuration.GetSection("Hangfire"));
 
 // Enable Hangfire Jobs
 builder.Services.AddHangfire(HangfireConfig.Configure);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHangfireDashboard(
     "/jobs",
     new DashboardOptions
@@ -33,5 +30,6 @@ app.UseHangfireDashboard(
     }
 );
 
-app.MapControllers();
+app.UseRouting();
+app.UseEndpoints(ep => ep.MapControllers());
 app.Run();

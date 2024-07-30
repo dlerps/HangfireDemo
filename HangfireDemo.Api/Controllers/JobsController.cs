@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HangfireDemo.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/api/[controller]")]
 public class JobsController
     : ControllerBase
 {
@@ -36,7 +36,7 @@ public class JobsController
         jobManager.AddOrUpdate<RepeatAfterMeJob>(
             jobId,
             job => job.Run(new RepeatAfterMeJobArgs(dto.Message, dto.Delay, DateTimeOffset.UtcNow)),
-            Cron.Minutely
+            dto.CronPattern ?? Cron.Minutely()
         );
         
         return Accepted(jobId);
