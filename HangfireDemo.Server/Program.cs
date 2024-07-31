@@ -7,12 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", false, false)
-    .AddJsonFile("appsettings.local.json", true, false)
-    .AddEnvironmentVariables()
-    .Build();
-
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration(c => c.AddJsonFile("appsettings.json", false, false)
         .AddJsonFile("appsettings.local.json", true, false)

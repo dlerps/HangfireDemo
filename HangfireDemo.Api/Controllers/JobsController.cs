@@ -25,7 +25,7 @@ public class JobsController
         return Accepted(jobId);
     }
     
-    [HttpPost("RepeatAfterMe")]
+    [HttpPut("RepeatAfterMe")]
     public async Task<IActionResult> PostRepeatAfterMe(
         [FromBody] CreateRepeatAfterMeJobDto dto,
         [FromServices] IRecurringJobManager jobManager)
@@ -39,7 +39,7 @@ public class JobsController
             dto.CronPattern ?? Cron.Minutely()
         );
         
-        return Accepted(jobId);
+        return Ok(jobId);
     }
     
     [HttpDelete("RepeatAfterMe/{jobId}")]
